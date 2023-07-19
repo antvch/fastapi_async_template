@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+alembic
+asyncpg
+sqlalchemy[asyncio]
+apscheduler

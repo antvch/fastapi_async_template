@@ -1,0 +1,39 @@
+version: "3.3"
+services:
+  app:
+    env_file: .env
+    container_name: fastapi_template
+    build:
+      context: ./../../
+      dockerfile: ./docker/local/Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./../../:/app
+    depends_on:
+      - postgres
+    networks:
+      - local
+    restart: on-failure
+  postgres:
+    image: postgres:latest
+    env_file: .env
+    container_name: fastapi_template_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=$DB_NAME
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+    volumes:
+      - fastapi_template_dbdata:/var/lib/postgresql/data
+    networks:
+      - local
+    ports:
+      - "5432:5432"
+
+volumes:
+  fastapi_template_dbdata:
+    driver: local
+networks:
+  local:
+    driver: bridge
