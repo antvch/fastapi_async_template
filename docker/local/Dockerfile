@@ -10,4 +10,4 @@ EXPOSE 80
 
 COPY . .
 
-ENTRYPOINT ["uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "80"]
+ENTRYPOINT ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]

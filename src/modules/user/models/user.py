@@ -2,6 +2,7 @@ from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy import String
 from src.db import ModelBase
 
+
 class User(ModelBase):
     __tablename__ = "users"
 

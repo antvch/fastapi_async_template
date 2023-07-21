@@ -2,22 +2,28 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_scoped_session, As
 from sqlalchemy.orm import DeclarativeBase
 from asyncio import current_task
 
-import os
+from .settings import env_vars
 
-class ModelBase(DeclarativeBase): pass
 
-DB_USER = os.environ['DB_USER']
-DB_PASSWORD = os.environ['DB_PASSWORD']
-DB_HOST = os.environ['DB_HOST']
-DB_PORT = os.environ['DB_PORT']
-DB_NAME = os.environ['DB_NAME']
-DB_URL = "postgresql+asyncpg://" + DB_USER + ":" + DB_PASSWORD + "@" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME
+class ModelBase(DeclarativeBase):
+    pass
+
+DB_URL = (
+    f"postgresql+asyncpg://" \
+    f"{env_vars.db_user}:" \
+    f"{env_vars.db_password}@" \
+    f"{env_vars.db_host}:" \
+    f"{env_vars.db_port}/" \
+    f"{env_vars.db_name}"
+)
+
 
 engine = create_async_engine(
     DB_URL,
-    echo=True,
+    echo=True,  # SQL query to terminal
     future=True,
 )
+
 
 async def get_session() -> AsyncSession:
     async_session = async_scoped_session(

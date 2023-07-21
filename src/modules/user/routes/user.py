@@ -3,7 +3,7 @@ from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from src.db import get_session
 from ..models.user import User
-from ..responses.user_response import UserResponse
+from ..schemas.user_response import UserResponse
 from ..exceptions.not_found import NotFoundException
 from ..middlewares.example_middleware import example_middleware
 
@@ -11,6 +11,7 @@ router = APIRouter(
     prefix="/user",
     tags=["ModuleName"]
 )
+
 
 @router.get("")
 async def get_users(
@@ -24,6 +25,7 @@ async def get_users(
 
     return users
 
+
 @router.get("/{id}")
 async def get_user(
     id: int,
@@ -33,11 +35,12 @@ async def get_user(
     Возвращает пользователя по id
     """
     user = await session.get(User, id)
-    
+
     if not user:
         raise NotFoundException("Пользователь не найден")
-    
+
     return user
+
 
 @router.delete("/{id}")
 async def delete_user(
@@ -49,7 +52,7 @@ async def delete_user(
     Удаление пользователя по id
     """
     user = await session.get(User, id)
-    
+
     if not user:
         raise NotFoundException("Пользователь не найден")
 
