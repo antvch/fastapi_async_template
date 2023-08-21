@@ -8,23 +8,28 @@ from settings import settings
 
 
 class ModelBase(DeclarativeBase):
-    pass
+    """Базовая модель SQLAlchemy."""
 
 
 engine = create_async_engine(
-    settings.POSTGRES.get_dsn(),
+    settings.postgres.get_dsn(),
     echo=True,  # SQL query to terminal
     future=True,
 )
 
 
 async def get_session() -> AsyncSession:
+    """
+    Возвращает SQLAlchemy сессию.
+
+    :yields: AsyncSession
+    """
     async_session = async_scoped_session(
         async_sessionmaker(
             engine,
             class_=AsyncSession,
         ),
-        scopefunc=current_task
+        scopefunc=current_task,
     )
 
     async with async_session() as session:

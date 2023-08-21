@@ -44,10 +44,10 @@ def run_migrations_offline() -> None:
 
     """
     context.configure(
-        url=settings.POSTGRES.get_dsn(),
+        url=settings.postgres.get_dsn(),
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
+        dialect_opts={'paramstyle': 'named'},
     )
 
     with context.begin_transaction():
@@ -67,10 +67,10 @@ async def run_async_migrations() -> None:
 
     """
     alembic_config = config.get_section(config.config_ini_section, {})
-    alembic_config['sqlalchemy.url'] = settings.POSTGRES.get_dsn()
+    alembic_config['sqlalchemy.url'] = settings.postgres.get_dsn()
     connectable = async_engine_from_config(
         alembic_config,
-        prefix="sqlalchemy.",
+        prefix='sqlalchemy.',
         poolclass=pool.NullPool,
     )
 

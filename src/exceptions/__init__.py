@@ -1,5 +1,5 @@
-from .not_found import NotFoundException
+from .not_found import NotFoundError
 
 __all__ = [
-    NotFoundException,
+    NotFoundError,
 ]
