@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from db import get_session
-from modules.user.models.user import User
 from modules.user.schemas.user_request import UserRequest
+from modules.user.services.users_service import UsersService, get_users_service
 
 router = APIRouter(
     prefix="/user",
@@ -14,14 +12,10 @@ router = APIRouter(
 @router.post("")
 async def create_user(
         user_request: UserRequest,
-        session: AsyncSession = Depends(get_session)
+        users_service: UsersService = Depends(get_users_service),
 ):
     """
     Добавление нового пользователя
     """
-    user = User(name=user_request.name)
-    session.add(user)
-    await session.commit()
-    await session.refresh(user)
-
+    user = await users_service.create_user(name=user_request.name)
     return {"success": 1, "user": user}

@@ -1,12 +1,9 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from db import get_session
 from exceptions import NotFoundException
 from modules.user.middlewares.example_middleware import example_middleware
-from modules.user.models.user import User
 from modules.user.schemas.user_response import UserResponse
+from modules.user.services.users_service import UsersService, get_users_service
 
 router = APIRouter(
     prefix="/user",
@@ -16,26 +13,26 @@ router = APIRouter(
 
 @router.get("")
 async def get_users(
-        session: AsyncSession = Depends(get_session)
+        users_service: UsersService = Depends(get_users_service),
 ):
     """
     Возвращает список пользователей
     """
-    result = await session.execute(select(User))
-    users = result.scalars().all()
 
+    users = await users_service.get_all_users()
     return users
 
 
 @router.get("/{id}")
 async def get_user(
         id: int,
-        session: AsyncSession = Depends(get_session)
+        users_service: UsersService = Depends(get_users_service),
 ) -> UserResponse:
     """
     Возвращает пользователя по id
     """
-    user = await session.get(User, id)
+
+    user = await users_service.get_user(user_id=id)
 
     if not user:
         raise NotFoundException("Пользователь не найден")
@@ -46,18 +43,16 @@ async def get_user(
 @router.delete("/{id}")
 async def delete_user(
         id: int,
-        session: AsyncSession = Depends(get_session),
+        users_service: UsersService = Depends(get_users_service),
         example_middleware=Depends(example_middleware)
 ):
     """
     Удаление пользователя по id
     """
-    user = await session.get(User, id)
 
+    user = await users_service.get_user(user_id=id)
     if not user:
         raise NotFoundException("Пользователь не найден")
 
-    await session.execute(delete(User).where(User.id == id))
-    await session.commit()
-
+    await users_service.delete_user(user_id=id)
     return {"success": 1}
