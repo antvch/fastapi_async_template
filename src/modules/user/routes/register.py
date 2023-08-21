@@ -4,7 +4,7 @@ from modules.user.schemas.user_request import UserRequest
 from modules.user.services.users_service import UsersService, get_users_service
 
 router = APIRouter(
-    prefix="/user",
+    prefix="/users",
     tags=["ModuleName"]
 )
 

@@ -6,7 +6,7 @@ from modules.user.schemas.user_response import UserResponse
 from modules.user.services.users_service import UsersService, get_users_service
 
 router = APIRouter(
-    prefix="/user",
+    prefix="/users",
     tags=["ModuleName"]
 )
 
@@ -23,16 +23,16 @@ async def get_users(
     return users
 
 
-@router.get("/{id}")
+@router.get("/{user_id}")
 async def get_user(
-        id: int,
+        user_id: int,
         users_service: UsersService = Depends(get_users_service),
 ) -> UserResponse:
     """
     Возвращает пользователя по id
     """
 
-    user = await users_service.get_user(user_id=id)
+    user = await users_service.get_user(user_id=user_id)
 
     if not user:
         raise NotFoundException("Пользователь не найден")
@@ -42,7 +42,7 @@ async def get_user(
 
 @router.delete("/{id}")
 async def delete_user(
-        id: int,
+        user_id: int,
         users_service: UsersService = Depends(get_users_service),
         example_middleware=Depends(example_middleware)
 ):
@@ -50,9 +50,9 @@ async def delete_user(
     Удаление пользователя по id
     """
 
-    user = await users_service.get_user(user_id=id)
+    user = await users_service.get_user(user_id=user_id)
     if not user:
         raise NotFoundException("Пользователь не найден")
 
-    await users_service.delete_user(user_id=id)
+    await users_service.delete_user(user_id=user_id)
     return {"success": 1}
