@@ -1,15 +1,27 @@
 from pydantic_settings import BaseSettings
 
 
+class Postgres(BaseSettings):
+    NAME: str
+    USER: str
+    PASSWORD: str
+    HOST: str
+    PORT: int
+
+    class Config:
+        case_sensitive = False
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+        env_prefix = 'DB_'
+
+    def get_dsn(self):
+        return f'postgresql+asyncpg://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.NAME}'  # noqa: E501
+
+
 class Settings(BaseSettings):
     """Init settings."""
 
-    # database
-    db_user: str
-    db_password: str
-    db_host: str
-    db_port: int
-    db_name: str
+    POSTGRES: Postgres = Postgres()
 
     # frontend
     frontend_urls: str | list[str] | None
@@ -20,7 +32,4 @@ class Settings(BaseSettings):
         env_file_encoding = "utf-8"
 
 
-env_vars = Settings(
-    _env_file=".env",
-    _env_file_encoding="utf-8",
-)
+settings = Settings()

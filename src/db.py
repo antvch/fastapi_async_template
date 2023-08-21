@@ -4,24 +4,15 @@ from sqlalchemy.ext.asyncio import (AsyncSession, async_scoped_session,
                                     async_sessionmaker, create_async_engine)
 from sqlalchemy.orm import DeclarativeBase
 
-from settings import env_vars
+from settings import settings
 
 
 class ModelBase(DeclarativeBase):
     pass
 
-DB_URL = (
-    f"postgresql+asyncpg://" \
-    f"{env_vars.db_user}:" \
-    f"{env_vars.db_password}@" \
-    f"{env_vars.db_host}:" \
-    f"{env_vars.db_port}/" \
-    f"{env_vars.db_name}"
-)
-
 
 engine = create_async_engine(
-    DB_URL,
+    settings.POSTGRES.get_dsn(),
     echo=True,  # SQL query to terminal
     future=True,
 )

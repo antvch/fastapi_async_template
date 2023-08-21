@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from modules.user.exceptions.not_found import NotFoundException
 from modules.user.jobs.example_job import example_job
 from routers import router
-from settings import env_vars
+from settings import settings
 
 # Init app
 app = FastAPI()
@@ -19,7 +19,7 @@ app.include_router(router)
 # Setup Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[env_vars.frontend_urls],
+    allow_origins=[settings.frontend_urls],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
