@@ -4,7 +4,7 @@ from datetime import datetime
 class Log:
     @staticmethod
     def to_file(
-        message: str
+            message: str
     ):
         """
         Запись сообщения в файл

@@ -1,4 +1,3 @@
-import os
 from pydantic_settings import BaseSettings
 
 
@@ -19,6 +18,7 @@ class Settings(BaseSettings):
         case_sensitive = False
         env_file = ".env"
         env_file_encoding = "utf-8"
+
 
 env_vars = Settings(
     _env_file=".env",

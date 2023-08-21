@@ -1,6 +1,6 @@
 import logging
-from ..services.log import Log
 
+from modules.user.services.log import Log
 
 # initialize logger
 logging.basicConfig(
@@ -8,6 +8,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 log = logging.getLogger(__name__)
+
 
 async def example_job():
     """

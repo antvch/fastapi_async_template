@@ -1,19 +1,20 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from src.db import get_session
-from ..models.user import User
-from ..schemas.user_request import UserRequest
+from db import get_session
+from modules.user.models.user import User
+from modules.user.schemas.user_request import UserRequest
 
 router = APIRouter(
     prefix="/user",
     tags=["ModuleName"]
 )
 
+
 @router.post("")
 async def create_user(
-    user_request: UserRequest,
-    session: AsyncSession = Depends(get_session)
+        user_request: UserRequest,
+        session: AsyncSession = Depends(get_session)
 ):
     """
     Добавление нового пользователя

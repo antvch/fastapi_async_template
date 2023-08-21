@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy import select, delete
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from src.db import get_session
-from ..models.user import User
-from ..schemas.user_response import UserResponse
-from ..exceptions.not_found import NotFoundException
-from ..middlewares.example_middleware import example_middleware
+
+from db import get_session
+from modules.user.exceptions import NotFoundException
+from modules.user.middlewares.example_middleware import example_middleware
+from modules.user.models.user import User
+from modules.user.schemas.user_response import UserResponse
 
 router = APIRouter(
     prefix="/user",
@@ -15,7 +16,7 @@ router = APIRouter(
 
 @router.get("")
 async def get_users(
-    session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends(get_session)
 ):
     """
     Возвращает список пользователей
@@ -28,8 +29,8 @@ async def get_users(
 
 @router.get("/{id}")
 async def get_user(
-    id: int,
-    session: AsyncSession = Depends(get_session)
+        id: int,
+        session: AsyncSession = Depends(get_session)
 ) -> UserResponse:
     """
     Возвращает пользователя по id
@@ -44,9 +45,9 @@ async def get_user(
 
 @router.delete("/{id}")
 async def delete_user(
-    id: int,
-    session: AsyncSession = Depends(get_session),
-    example_middleware = Depends(example_middleware)
+        id: int,
+        session: AsyncSession = Depends(get_session),
+        example_middleware=Depends(example_middleware)
 ):
     """
     Удаление пользователя по id

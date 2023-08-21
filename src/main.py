@@ -1,16 +1,14 @@
-import os
-from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
-from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from fastapi import FastAPI, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-from .settings import env_vars
-from .routers import router
-from .modules.user.exceptions.not_found import NotFoundException
-from .modules.user.jobs.example_job import example_job
-
+from modules.user.exceptions.not_found import NotFoundException
+from modules.user.jobs.example_job import example_job
+from routers import router
+from settings import env_vars
 
 # Init app
 app = FastAPI()
