@@ -5,7 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from modules.user.exceptions.not_found import NotFoundException
+from exceptions import NotFoundException
 from modules.user.jobs.example_job import example_job
 from routers import router
 from settings import settings

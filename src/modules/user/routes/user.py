@@ -3,7 +3,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from db import get_session
-from modules.user.exceptions import NotFoundException
+from exceptions import NotFoundException
 from modules.user.middlewares.example_middleware import example_middleware
 from modules.user.models.user import User
 from modules.user.schemas.user_response import UserResponse

@@ -1,6 +1,6 @@
 from fastapi import Request, Response
 
-from modules.user.exceptions import NotFoundException
+from exceptions import NotFoundException
 
 
 def example_middleware(request: Request, response: Response):
