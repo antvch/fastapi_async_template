@@ -9,6 +9,4 @@ EXPOSE 80
 COPY . .
 WORKDIR /app/src
 
-ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
-
-
+CMD alembic --config ./alembic/alembic.ini upgrade head && uvicorn main:app --host 0.0.0.0 --port 80 --reload
