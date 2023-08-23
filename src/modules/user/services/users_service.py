@@ -1,51 +1,44 @@
 from fastapi import Depends
-from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from db import get_session
-from modules.user.models.user import User
+from db import get_async_sessionmaker
+from modules.user.models.user import UserModel
+from services.base_postgres import DatabaseService
 
 
-class UsersService:
+class UsersService(DatabaseService):
     """Сервис, инкапсулирующий в себе всю логику по работе с пользователем в базе данных."""
 
-    def __init__(self, session: AsyncSession):
-        self.session = session
+    model = UserModel
 
-    async def create_user(self, name: str) -> User:
+    async def create_user(self, name: str) -> UserModel:
         """
         Создаёт пользователя.
 
         :param name: Имя пользователя
         :type name: str
 
-        :returns: User
+        :returns: UserModel
         """
-        user = User(name=name)
-        self.session.add(user)
-        await self.session.commit()
-        await self.session.refresh(user)
-        return user
+        return await self._add(name=name)
 
-    async def get_all_users(self) -> list[User]:
+    async def get_all_users(self) -> list[UserModel]:
         """
         Возвращает всех пользователей.
 
-        :returns: list[User]
+        :returns: list[UserModel]
         """
-        db_result = await self.session.execute(select(User))
-        return db_result.scalars().all()
+        return await self._get_all()
 
-    async def get_user(self, user_id: int) -> User | None:
+    async def get_user(self, user_id: int) -> UserModel | None:
         """
         Возвращает пользователя по его id.
 
         :param user_id: Айди юзера
         :type user_id: int
 
-        :returns: User | None
+        :returns: UserModel | None
         """
-        return await self.session.get(User, user_id)
+        return await self._get_one(self.model.id == user_id)
 
     async def delete_user(self, user_id: int):
         """
@@ -54,20 +47,16 @@ class UsersService:
         :param user_id: Айди юзера
         :type user_id: int
         """
-        await self.session.execute(
-            delete(User).where(User.id == user_id),
-        )
-        await self.session.commit()
+        await self._delete(self.model.id == user_id)
 
 
 def get_users_service(
-        session: AsyncSession = Depends(get_session),  # noqa: B008, WPS404
+        async_session=Depends(get_async_sessionmaker),  # noqa: WPS404, B008
 ) -> UsersService:
     """
     Функция используется для Dependency-injection. Возвращает сервис пользователей.
 
-    :param session: Сессия SQLAlchemy
-    :type session: AsyncSession
+    :param async_session: Сессия SQLAlchemy
     :returns: UsersService
     """
-    return UsersService(session=session)
+    return UsersService(async_session=async_session)

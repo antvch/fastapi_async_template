@@ -23,7 +23,7 @@ async def get_users(
 
     :returns: list[UserResponse]
     """
-    return await users_service.get_all_users()
+    return [UserResponse(**user.as_dict()) for user in await users_service.get_all_users()]
 
 
 @router.get('/{user_id}')
@@ -49,7 +49,7 @@ async def get_user(
     if not user:
         raise NotFoundError('Пользователь не найден')
 
-    return user
+    return UserResponse(**user.as_dict())
 
 
 @router.delete('/{user_id}')

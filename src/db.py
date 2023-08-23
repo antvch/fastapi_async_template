@@ -1,7 +1,5 @@
-from asyncio import current_task
-
-from sqlalchemy.ext.asyncio import (AsyncSession, async_scoped_session,
-                                    async_sessionmaker, create_async_engine)
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
 from sqlalchemy.orm import DeclarativeBase
 
 from settings import settings
@@ -18,19 +16,10 @@ engine = create_async_engine(
 )
 
 
-async def get_session() -> AsyncSession:
+async def get_async_sessionmaker() -> async_sessionmaker[AsyncSession]:
     """
     Возвращает SQLAlchemy сессию.
 
-    :yields: AsyncSession
+    :returns: async_sessionmaker[AsyncSession]
     """
-    async_session = async_scoped_session(
-        async_sessionmaker(
-            engine,
-            class_=AsyncSession,
-        ),
-        scopefunc=current_task,
-    )
-
-    async with async_session() as session:
-        yield session
+    return async_sessionmaker(engine, expire_on_commit=False)

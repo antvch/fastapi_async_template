@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from modules.user.schemas.user_request import UserRequest
+from modules.user.schemas.user_response import UserResponse
 from modules.user.services.users_service import UsersService, get_users_service
 
 router = APIRouter(
@@ -26,4 +27,4 @@ async def create_user(
     :returns: dict
     """
     user = await users_service.create_user(name=user_request.name)
-    return {'success': 1, 'user': user}
+    return {'success': 1, 'user': UserResponse(**user.as_dict())}
