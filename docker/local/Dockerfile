@@ -1,8 +1,9 @@
 FROM python:3.11-bookworm
 
-RUN pip install --upgrade pip
 WORKDIR /app
+
 COPY requirements.txt requirements.txt
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN apt update
 EXPOSE 80

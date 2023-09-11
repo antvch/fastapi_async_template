@@ -1,14 +1,9 @@
-import re
-from typing import Any, Dict, Final, Iterable, Pattern, Type, cast
+from typing import Any, Iterable
 
-from sqlalchemy.orm import declared_attr, has_inherited_table, registry
+from sqlalchemy.orm import registry
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 
 mapper_registry = registry()
-
-# Регулярное выражение, которое разделяет строку по заглавным буквам
-TABLE_NAME_REGEX: Pattern[str] = re.compile('(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])')
-PLURAL: Final[str] = 's'
 
 
 class DatabaseModel(metaclass=DeclarativeMeta):
@@ -22,29 +17,11 @@ class DatabaseModel(metaclass=DeclarativeMeta):
     registry = mapper_registry
     metadata = mapper_registry.metadata
 
-    @declared_attr
-    def __tablename__(self) -> str | None:
-        """
-        Автоматически генерирует имя таблицы из названия модели.
-
-        :returns: str | None
-        """
-        if has_inherited_table(cast(Type[DatabaseModel], self)):
-            return None
-        cls_name = cast(Type[DatabaseModel], self).__qualname__
-        table_name_parts = re.split(TABLE_NAME_REGEX, cls_name)
-        formatted_table_name = ''.join(
-            f'{table_name_part.lower()}_'
-            for table_name_part in table_name_parts
-        )
-        last_underscore = formatted_table_name.rfind('_')
-        return formatted_table_name[:last_underscore] + PLURAL
-
     def as_dict(
             self,
             include: Iterable | None = None,
             exclude: Iterable | None = None,
-    ) -> Dict[Any, Any]:
+    ) -> dict[Any, Any]:
         """
         Возвращает модель в виде словаря.
 
@@ -66,7 +43,7 @@ class DatabaseModel(metaclass=DeclarativeMeta):
             self,
             include: Iterable | None = None,
             exclude: Iterable | None = None,
-    ) -> Dict[Any, Any]:
+    ) -> dict[Any, Any]:
         if include == exclude and include is not None:
             raise ValueError('Only exclude or include, not both')
         if include is not None:
