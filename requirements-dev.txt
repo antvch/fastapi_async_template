@@ -1,0 +1,8 @@
+fastapi
+pydantic_settings
+uvicorn[standard]
+alembic
+asyncpg
+sqlalchemy[asyncio]
+apscheduler
+wemake-python-styleguide

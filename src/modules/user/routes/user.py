@@ -1,62 +1,81 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy import select, delete
-from sqlalchemy.ext.asyncio.session import AsyncSession
-from src.db import get_session
-from ..models.user import User
-from ..schemas.user_response import UserResponse
-from ..exceptions.not_found import NotFoundException
-from ..middlewares.example_middleware import example_middleware
+
+from exceptions import NotFoundError
+from modules.user.middlewares.example_middleware import example_middleware
+from modules.user.schemas.user_response import UserResponse
+from modules.user.services.users_service import UsersService, get_users_service
 
 router = APIRouter(
-    prefix="/user",
-    tags=["ModuleName"]
+    prefix='/users',
+    tags=['ModuleName'],
 )
 
 
-@router.get("")
+@router.get('')
 async def get_users(
-    session: AsyncSession = Depends(get_session)
-):
+        users_service: UsersService = Depends(get_users_service),  # noqa: B008, WPS404
+) -> list[UserResponse]:
     """
-    Возвращает список пользователей
+    Возвращает список пользователей.
+
+    :param users_service: Сервис пользователей
+    :type users_service: UsersService
+
+    :returns: list[UserResponse]
     """
-    result = await session.execute(select(User))
-    users = result.scalars().all()
-
-    return users
+    return [UserResponse(**user.as_dict()) for user in await users_service.get_all_users()]
 
 
-@router.get("/{id}")
+@router.get('/{user_id}')
 async def get_user(
-    id: int,
-    session: AsyncSession = Depends(get_session)
+        user_id: int,
+        users_service: UsersService = Depends(get_users_service),  # noqa: B008, WPS404
 ) -> UserResponse:
     """
-    Возвращает пользователя по id
+    Возвращает пользователя по id.
+
+    :param user_id: Айди пользователя
+    :type user_id: int
+
+    :param users_service: Сервис пользователей
+    :type users_service: UsersService
+
+    :returns: UserResponse
+
+    :raises NotFoundError: Пользователь не найден
     """
-    user = await session.get(User, id)
+    user = await users_service.get_user(user_id=user_id)
 
     if not user:
-        raise NotFoundException("Пользователь не найден")
+        raise NotFoundError('Пользователь не найден')
 
-    return user
+    return UserResponse(**user.as_dict())
 
 
-@router.delete("/{id}")
+@router.delete('/{user_id}')
 async def delete_user(
-    id: int,
-    session: AsyncSession = Depends(get_session),
-    example_middleware = Depends(example_middleware)
-):
+        user_id: int,
+        users_service: UsersService = Depends(get_users_service),  # noqa: B008, WPS404
+        example_middleware=Depends(example_middleware),  # noqa: B008, WPS404, WPS442
+) -> dict:
     """
-    Удаление пользователя по id
-    """
-    user = await session.get(User, id)
+    Удаляет пользователя по id.
 
+    :param user_id: Айди пользователя
+    :type user_id: int
+
+    :param users_service: Сервис пользователей
+    :type users_service: UsersService
+
+    :param example_middleware: Мидлварь
+
+    :returns: dict
+
+    :raises NotFoundError: Пользователь не найден
+    """
+    user = await users_service.get_user(user_id=user_id)
     if not user:
-        raise NotFoundException("Пользователь не найден")
+        raise NotFoundError('Пользователь не найден')
 
-    await session.execute(delete(User).where(User.id == id))
-    await session.commit()
-
-    return {"success": 1}
+    await users_service.delete_user(user_id=user_id)
+    return {'success': 1}

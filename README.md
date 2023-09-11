@@ -55,4 +55,4 @@ docker compose -f .\docker\local\docker-compose.yml up -d
 ```
 alembic -c alembic/alembic.ini revision -m "migration description" --autogenerate
 ```
-Каждый раз при добавлении новой модели необходимо импортировать ее в env.py (например, from modules.module1.models.user import User), для того, чтобы alembic сгенерировал миграцию.
+Каждый раз при добавлении новой модели необходимо импортировать ее в env.py (например, from modules.module1.models.user import UserModel), для того, чтобы alembic сгенерировал миграцию.

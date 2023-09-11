@@ -1,38 +1,25 @@
-from sqlalchemy.ext.asyncio import create_async_engine, async_scoped_session, AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
 from sqlalchemy.orm import DeclarativeBase
-from asyncio import current_task
 
-from .settings import env_vars
+from settings import settings
 
 
 class ModelBase(DeclarativeBase):
-    pass
-
-DB_URL = (
-    f"postgresql+asyncpg://" \
-    f"{env_vars.db_user}:" \
-    f"{env_vars.db_password}@" \
-    f"{env_vars.db_host}:" \
-    f"{env_vars.db_port}/" \
-    f"{env_vars.db_name}"
-)
+    """Базовая модель SQLAlchemy."""
 
 
 engine = create_async_engine(
-    DB_URL,
+    settings.postgres.get_dsn(),
     echo=True,  # SQL query to terminal
     future=True,
 )
 
 
-async def get_session() -> AsyncSession:
-    async_session = async_scoped_session(
-        async_sessionmaker(
-            engine,
-            class_=AsyncSession,
-        ),
-        scopefunc=current_task
-    )
+async def get_async_sessionmaker() -> async_sessionmaker[AsyncSession]:
+    """
+    Возвращает SQLAlchemy сессию.
 
-    async with async_session() as session:
-        yield session
+    :returns: async_sessionmaker[AsyncSession]
+    """
+    return async_sessionmaker(engine, expire_on_commit=False)

@@ -1,8 +1,24 @@
-version: "3.3"
+version: "3.8"
+
+x-pg-cred: &pg-cred
+  POSTGRES_DB: ${DB_NAME}
+  POSTGRES_USER: ${DB_USER}
+  POSTGRES_PASSWORD: ${DB_PASSWORD}
+  POSTGRES_HOST: ${DB_HOST}
+  POSTGRES_PORT: ${DB_PORT}
+
+
+x-app-cred: &app-cred
+  <<: *pg-cred
+  FRONTEND_URLS: ${FRONTEND_URLS}
+
 services:
+
   app:
     env_file: .env
     container_name: fastapi_template
+    environment:
+      <<: *app-cred
     build:
       context: ./../../
       dockerfile: ./docker/local/Dockerfile
@@ -15,15 +31,14 @@ services:
     networks:
       - local
     restart: on-failure
+
   postgres:
     image: postgres:latest
     env_file: .env
     container_name: fastapi_template_postgres
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=$DB_NAME
-      - POSTGRES_USER=$DB_USER
-      - POSTGRES_PASSWORD=$DB_PASSWORD
+      <<: *pg-cred
     volumes:
       - fastapi_template_dbdata:/var/lib/postgresql/data
     networks:

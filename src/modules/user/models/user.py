@@ -1,10 +1,11 @@
-from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy import String
-from src.db import ModelBase
+from sqlalchemy.orm import Mapped, mapped_column
+
+from models.base import DatabaseModel
 
 
-class User(ModelBase):
-    __tablename__ = "users"
+class UserModel(DatabaseModel):
+    __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(30))
+    name: Mapped[str] = mapped_column(String(30))  # noqa: WPS432

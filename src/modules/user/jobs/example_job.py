@@ -1,17 +1,16 @@
 import logging
-from ..services.log import Log
 
+from modules.user.services.log import LogsService
 
 # initialize logger
 logging.basicConfig(
-    format='%(levelname)s - %(asctime)s - %(message)s',
-    level=logging.INFO
+    format='%(levelname)s - %(asctime)s - %(message)s',  # noqa: WPS323
+    level=logging.INFO,
 )
 log = logging.getLogger(__name__)
 
+
 async def example_job():
-    """
-    Example of background task with Scheduler
-    """
+    """Пример функции, работающей в фоне."""
     log.info('START EXAMPLE JOB...')
-    Log.to_file("Example job just got executed")
+    LogsService.to_file('Example job just got executed')

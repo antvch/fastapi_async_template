@@ -1,17 +1,18 @@
 from datetime import datetime
 
 
-class Log:
-    @staticmethod
-    def to_file(
-        message: str
-    ):
+class LogsService:
+    def __init__(self):
+        self.filepath = 'storage/log.txt'
+
+    def to_file(self, message: str):
         """
-        Запись сообщения в файл
+        Записывает сообщение в лог-файл.
 
         :param message: Сообщение для логирования
+        :type message: str
         """
-        now = datetime.now()
+        now = datetime.now().strftime('%d.%m.%Y %H:%M:%S')
 
-        with open("storage/log.txt", "a") as f:
-            f.write(f'{now.strftime("%d.%m.%Y %H:%M:%S")}: {message} \n')
+        with open(self.filepath, 'a') as log_file:
+            log_file.write(f'{now}: {message} \n')
